@@ -1,1 +1,3 @@
-# My exercises for Full Stack Open 2022
+# Full Stack open 2022
+
+My exercises for Full Stack open 2022
