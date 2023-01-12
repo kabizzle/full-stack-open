@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 
 import Filter from './components/Filter'
 import Form from './components/Form'
 import PersonList from './components/PersonList'
+
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -18,11 +19,14 @@ const App = () => {
 
   useEffect(() => {
     console.log("Fetching data from server")
-    axios
-      .get('http://localhost:3001/persons')
-      .then( response => {
+    personService
+      .getAll()
+      .then(initialPersons => {
         console.log("Data received")
-        setPersons(response.data)
+        setPersons(initialPersons)
+      })
+      .catch(error => {
+        console.log("Data not received")
       })
   }, [])
 
@@ -30,16 +34,34 @@ const App = () => {
     e.preventDefault()
     
     const result = persons.some(person => person.name === newName)
+    const newPerson = { name: newName, number: newNumber }
 
     if (result) {
-      alert(`${newName} is already in the phonebook`)
-      return
+      const answer = window.confirm(`${newName} is already in the phonebook, replace the old number with a new one?`)
+      if (answer) { 
+        const personToChange = persons.find(person => person.name === newName)
+        console.log(personToChange.id)
+        personService
+        .update(personToChange.id, newPerson)
+      }
+      else return
     }
+    else {
+      console.log("Adding person to server")
 
-    const newPerson = { name: newName, number: newNumber, id:persons.length+1 }
-    setPersons(persons.concat(newPerson))
-    setNewName('')
-    setNewNumber('')
+      personService
+      .create(newPerson)
+      .then(returnedPersons => {
+        setPersons(persons.concat(returnedPersons))
+        setNewName('')
+        setNewNumber('')
+      })
+      .catch(error => {
+        console.log("Person was not added to server")
+      })
+
+      console.log("Person was added to server")
+    }
   }
 
   const handleNameChange = (e) => {
@@ -63,6 +85,22 @@ const App = () => {
   ? persons
   : persons.filter( person => person.name.toLowerCase().includes(newSearch.toLowerCase()))
 
+  const deletePerson = (props) => {
+    console.log("attemping to delete")
+    console.log(props.id)
+    const answer = window.confirm(`Are you sure you want to delete this user?`)
+    if (answer) {   
+      personService
+      .deletePerson(props.id)
+      .catch(error => {
+        console.log("Person was not deleted form server")
+      })
+
+      console.log("Person was deleted from server")
+    }
+    else return
+    }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -81,7 +119,7 @@ const App = () => {
         )}
       </ul> */}
 
-      <PersonList filteredPersons={filteredPersons} />
+      <PersonList filteredPersons={filteredPersons} deletePerson={deletePerson}/>
     </div>
   )
 }
