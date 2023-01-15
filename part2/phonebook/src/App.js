@@ -4,18 +4,17 @@ import personService from './services/persons'
 import Filter from './components/Filter'
 import Form from './components/Form'
 import PersonList from './components/PersonList'
+import Notification from './components/Notification'
 
 
 const App = () => {
   const [persons, setPersons] = useState([])
-
-  const [filter, setFilter] = useState(true)
-
+  const [filter, setFilter] = useState(false)
   const [newName, setNewName] = useState('')
-  
   const [newNumber, setNewNumber] = useState('')
-
   const [newSearch, setNewSearch] = useState('')
+  const [errorMsg, setErrorMsg] = useState(null)
+  const [filteredPersons, setFilteredPersons] = useState([])
 
   useEffect(() => {
     console.log("Fetching data from server")
@@ -43,6 +42,11 @@ const App = () => {
         console.log(personToChange.id)
         personService
         .update(personToChange.id, newPerson)
+
+        setErrorMsg(`Updated number for ${newName}`)
+        setTimeout(() => {
+          setErrorMsg(null)
+        }, 3500)
       }
       else return
     }
@@ -59,6 +63,11 @@ const App = () => {
       .catch(error => {
         console.log("Person was not added to server")
       })
+
+      setErrorMsg(`Added ${newPerson.name}`)
+      setTimeout(() => {
+        setErrorMsg(null)
+      }, 5000)
 
       console.log("Person was added to server")
     }
@@ -81,9 +90,14 @@ const App = () => {
     setFilter(false)
   } 
 
-  const filteredPersons = filter
-  ? persons
-  : persons.filter( person => person.name.toLowerCase().includes(newSearch.toLowerCase()))
+  useEffect(() => {
+    if (!filter) {
+      setFilteredPersons(persons.filter( person => person.name.toLowerCase().includes(newSearch.toLowerCase())))
+    }
+    else {
+      setFilteredPersons(persons)
+    }
+  }, [filter, persons, newSearch])
 
   const deletePerson = (props) => {
     console.log("attemping to delete")
@@ -93,7 +107,7 @@ const App = () => {
       personService
       .deletePerson(props.id)
       .catch(error => {
-        console.log("Person was not deleted form server")
+        console.log("Person was not deleted from server")
       })
 
       console.log("Person was deleted from server")
@@ -104,7 +118,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      
+      <Notification message={errorMsg} />
+
       <Filter value={newSearch} onChange={handleSearchChange}/>
       
       <h3>Add a new</h3>
