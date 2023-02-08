@@ -42,7 +42,7 @@ const App = () => {
     <div>
       <h1>Country Search </h1>
       <Filter value={newSearch} onChange={handleSearchChange} />
-      <Country countries={displayedCountries}/>
+      <div id='country'><Country countries={displayedCountries}/></div>
     </div>
   );
 }
