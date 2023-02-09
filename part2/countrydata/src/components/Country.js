@@ -26,9 +26,10 @@ const Country = ({countries}) => {
         // )
         // setShowCountry(true)
 
-        setDisplayedCountry(countries[0])
+        // setDisplayedCountry(countries[0])
         return (
-            <div><CountryDetails country={displayedCountry}/></div>
+            // <div><CountryDetails country={displayedCountry}/></div>
+            <CountryDetails country={countries[0]}/>
         )
     }
     else if (countries.length <= 10 && countries.length > 1) {

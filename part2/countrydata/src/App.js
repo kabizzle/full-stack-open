@@ -8,7 +8,7 @@ const App = () => {
   const [countryData, setCountryData] = useState([]) 
   const [newSearch, setNewSearch] = useState('')
 
-  const [filter, setFilter] = useState(true)
+  // const [filter, setFilter] = useState(true)
   const [displayedCountries, setDisplayedCountries] = useState([])
 
   
@@ -24,8 +24,8 @@ const App = () => {
     .catch(err => {
       console.log("Country data was not fetched")
     })
-    
-    console.log(countryData)
+
+    // console.log(countryData)
   }, [])
   
   const handleSearchChange = (e) => {
