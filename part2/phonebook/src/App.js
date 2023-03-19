@@ -61,13 +61,13 @@ const App = () => {
         setNewNumber('')
       })
       .catch(error => {
-        console.log("Person was not added to server")
+        console.log("Person was not added to server due to: \n", error.response.data.error)
+        setErrorMsg( error.response.data.error)
+        setTimeout(() => {
+          setErrorMsg(null)
+        }, 5000)
       })
 
-      setErrorMsg(`Added ${newPerson.name}`)
-      setTimeout(() => {
-        setErrorMsg(null)
-      }, 5000)
 
       console.log("Person was added to server")
     }
